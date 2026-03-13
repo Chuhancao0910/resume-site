@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1920, initial-scale=1.0">
+    <title>Chuhan Cao - Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
+    
+    <style>
+        @font-face {
+            font-family: 'DelaGothicOne';
+            src: url('https://assets-persist.lovart.ai/agent-static-assets/DelaGothicOne-Regular.ttf') format('truetype');
+        }
+        @font-face {
+            font-family: 'MiSans';
+            src: url('https://assets-persist.lovart.ai/agent-static-assets/MiSans-Regular.ttf') format('truetype');
+            font-weight: 400;
+        }
+        @font-face {
+            font-family: 'MiSans';
+            src: url('https://assets-persist.lovart.ai/agent-static-assets/MiSans-Bold.ttf') format('truetype');
+            font-weight: 700;
+        }
+        @font-face {
+            font-family: 'MaShanZheng';
+            src: url('https://assets-persist.lovart.ai/agent-static-assets/MaShanZheng-Regular.ttf') format('truetype');
+        }
+
+        body {
+            background-color: #F5F5F5;
+            color: #8C9197;
+            font-family: 'MiSans', sans-serif;
+            overflow-x: hidden;
+            width: 1920px;
+            margin: 0 auto;
+            cursor: none; /* Hide default cursor */
+        }
+
+        .cursor-dot,
+        .cursor-outline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            z-index: 9999;
+            pointer-events: none;
+        }
+
+        .cursor-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #E898B7;
+        }
+
+        .cursor-outline {
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            background: rgba(232, 152, 183, 0.4);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: width 0.3s, height 0.3s, background 0.3s;
+            mix-blend-mode: multiply;
+        }
+
+        body:hover .cursor-outline {
+            opacity: 1;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+            border-radius: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .glass-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+            opacity: 0.5;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .hero-text {
+            font-family: 'DelaGothicOne', sans-serif;
+            line-height: 0.85;
+            color: #E898B7;
+            mix-blend-mode: multiply;
+        }
+        .hero-img-container {
+            width: 500px;
+            height: 650px;
+            overflow: hidden;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 0;
+            border-radius: 200px 200px 0 0;
+        }
+
+        .handwritten {
+            font-family: 'MaShanZheng', cursive;
+        }
+
+        .marquee-container {
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .marquee-content {
+            display: inline-block;
+            animation: marquee 30s linear infinite;
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        .magnet-target {
+            display: inline-block;
+            transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .hover-reveal-img {
+            opacity: 0;
+            transform: scale(0.8) rotate(-5deg);
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            pointer-events: none;
+        }
+
+        .exp-item:hover .hover-reveal-img {
+            opacity: 1;
+            transform: scale(1) rotate(0deg);
+        }
+        
+        .section-padding {
+            padding: 120px 100px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="app">
+    <!-- Custom Cursor -->
+    <div ref="cursorDot" class="cursor-dot"></div>
+    <div ref="cursorOutline" class="cursor-outline"></div>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 px-[100px] py-8 flex justify-between items-center mix-blend-difference text-[#E898B7]">
+        <div class="text-2xl font-bold tracking-tighter hover:scale-105 transition-transform">CC.</div>
+        <div class="flex gap-12 text-sm font-medium">
+            <a href="#about" class="magnet-target hover:text-white transition-colors">About</a>
+            <a href="#experience" class="magnet-target hover:text-white transition-colors">Experience</a>
+            <a href="#contact" class="magnet-target hover:text-white transition-colors">Contact</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative w-full h-screen flex flex-col justify-center items-center overflow-hidden">
+        <!-- Floating shapes -->
+        <div class="absolute top-1/4 left-1/4 w-64 h-64 bg-[#E898B7] rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"></div>
+        <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20" style="animation: pulse 4s infinite reverse;"></div>
+ <div class="absolute top-20 left-40 w-64 text-left font-[NotoSerifCJKsc] italic text-xl text-[#8C9197] rotate-[-5deg] glass-card p-6 rounded-2xl float-anim-1">
+                    "Hi. Since you're new here, let me be your creative guide."
+                </div>
+        <div class="relative z-10 text-center w-full max-w-[1600px] px-[100px]">
+            
+            
+            <div class="relative flex justify-center items-center">
+                 <!-- Main Image -->
+                <div class="absolute z-0 w-[500px] h-[600px] overflow-hidden grayscale opacity-0 reveal-img" style="border-radius: 200px 200px 20px 20px;">
+                    
+                </div>
+
+                <!-- Giant Name Overlay -->
+                <h1 class="hero-text text-[240px] z-10 w-full text-center tracking-tighter relative select-none">
+                    <div class="reveal-name-top translate-y-[100px] opacity-0">CHUHAN</div>
+                    <div class="reveal-name-bottom -translate-y-[100px] opacity-0" style="-webkit-text-stroke: 3px #E898B7;">CAO</div>
+                </h1>
+            </div>
+ <div class="hero-img-container shadow-2xl transition-all duration-700 ease-out scale-90 z-0" ref="heroImg">
+                    <img src="https://a.lovart.ai/artifacts/user/iVN5Q49pFy6vu2bE.jpg" class="w-full h-full object-cover" alt="Chuhan Cao">
+                </div>
+            <div class="mt-12 flex justify-between items-end w-full px-20 opacity-0 reveal-sub">
+                <div class="text-left">
+                    <p class="text-xl font-medium text-black">Web Designer</p>
+                    <p class="text-lg">UI & Digital Experience</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-xl font-medium text-[#E898B7]">Based in Ottawa, Canada</p>
+                </div>
+            </div>
+        </div>
+       
+<!-- <div class="absolute z-10 w-[200px] h-[350px] overflow-hidden rounded-full grayscale hover:grayscale-0 transition-all duration-700 ease-in-out border border-[#E898B7]/20 glass-card image-reveal">
+                   <img src="https://a.lovart.ai/artifacts/user/H6Rz2Oi04PEnK2VE.png" alt="Chuhan Cao" class="w-full h-full object-cover object-center scale-110 hover:scale-100 transition-transform duration-1000">
+                </div> -->
+        <!-- Scroll Indicator -->
+          <div class="absolute left-[20%] bottom-[15%] text-[120px] text-[#E898B7] opacity-20 font-[DelaGothicOne] animate-bounce">*</div>
+        <div class="absolute bottom-10 left-1/2 -translate-x-[80%] flex flex-col items-center gap-2 opacity-0 reveal-sub">
+            <span class="text-xs tracking-widest uppercase">Scroll</span>
+            <div class="w-[1px] h-16 bg-[#E898B7] origin-top animate-bounce"></div>
+        </div>
+    </section>
+
+    <!-- About Section (Bento Grid) -->
+    <section id="about" class="section-padding min-h-screen flex items-center justify-center relative">
+        <div class="w-full max-w-[1400px]">
+            <div class="grid grid-cols-12 gap-8 grid-rows-2 h-[800px]">
+                <!-- Bio Card -->
+                <div class="col-span-7 row-span-2 glass-card p-12 flex flex-col justify-between group hover:shadow-lg transition-shadow duration-500 about-card opacity-0 translate-y-20">
+                    <div>
+                        <h2 class="text-6xl font-bold text-black mb-8 leading-tight">About <br><span class="text-[#E898B7]">Me</span>.</h2>
+                        <p class="text-2xl leading-relaxed font-light text-gray-600 max-w-2xl">Web designer with a background in Interactive Media Design and hands-on experience in building and maintaining digital experiences across websites and marketing platforms.
+
+My work focuses on creating clean, user-friendly interfaces and visually engaging layouts. I enjoy translating ideas into structured web pages, landing pages, and digital products that balance aesthetics with usability.
+
+With experience working alongside marketing and technical teams, I am comfortable managing website content, adjusting layouts, and ensuring digital assets remain consistent across platforms.
+
+Tools and platforms I frequently work with include HTML/CSS, CMS systems such as WordPress, Shopify, and Squarespace, as well as UI design tools like Figma and Adobe XD.
+                        </p>
+                    </div>
+                    <div class="flex gap-4 mt-8">
+                        <div class="px-6 py-3 rounded-full border border-[#8C9197] text-sm uppercase tracking-wide">Storytelling</div>
+                        <div class="px-6 py-3 rounded-full border border-[#8C9197] text-sm uppercase tracking-wide">Strategy</div>
+                        <div class="px-6 py-3 rounded-full border border-[#8C9197] text-sm uppercase tracking-wide">Graphic Design</div>
+                    </div>
+                </div>
+ 
+
+                <!-- Stats Card -->
+                <div class="col-span-5 row-span-1 glass-card p-10 flex flex-col justify-center items-center text-center bg-[#E898B7]/10 about-card opacity-0 translate-y-20">
+                    <div class="text-8xl font-black text-[#E898B7] mb-2 font-['DelaGothicOne']">3+</div>
+                    <div class="text-xl text-gray-600">Years of Experience</div>
+                </div>
+
+                <!-- Location & Contact Mini -->
+                <div class="col-span-5 row-span-1 glass-card p-10 flex flex-col justify-between about-card opacity-0 translate-y-20 relative overflow-hidden group">
+                     <div class="absolute top-0 right-0 w-32 h-32 bg-[#E898B7] rounded-full blur-3xl opacity-20 -mr-10 -mt-10 group-hover:scale-150 transition-transform duration-700"></div>
+                     <div>
+                        <h3 class="text-3xl font-bold text-black mb-2">Ottawa, Canada</h3>
+                        <p class="text-lg">Open to remote opportunities globally.</p>
+                     </div>
+                     <div class="flex justify-between items-end">
+                        <div class="flex gap-4">
+                            <i class="ri-map-pin-line text-2xl text-[#E898B7]"></i>
+                            <i class="ri-global-line text-2xl text-[#E898B7]"></i>
+                        </div>
+                        <a href="/cdn-cgi/l/email-protection#7211131d111a071a131c321d07061e1d1d195c111d1f" class="text-[#E898B7] font-bold text-lg hover:underline flex items-center gap-2">
+                            Let's Talk <i class="ri-arrow-right-up-line"></i>
+                        </a>
+                     </div>
+                </div>
+            </div>
+        </div>
+    </section>
+<!-- Experience Section -->
+        <section id="experience" class="min-h-screen w-full px-32 py-32 bg-white">
+            <h2 class="text-[120px] font-bold text-gray-100 absolute left-10 pointer-events-none select-none">CAREER</h2>
+            
+            <div class="max-w-4xl mx-auto relative z-10 timeline-container">
+                <div class="mb-20">
+                     <p class="text-[#E898B7] text-xl font-serif-accent italic mb-2">My Journey</p>
+                     <h3 class="text-4xl text-gray-800 font-semibold">Professional Experience</h3>
+                </div>
+
+                <!-- Timeline Item 1 -->
+                <div class="flex gap-12 py-12 border-t border-gray-200 timeline-item transition-opacity duration-300 group hover-trigger" @mouseenter="cursorEnter" @mouseleave="cursorLeave">
+                    <div class="w-32 pt-2 text-right">
+                        <span class="text-[#E898B7] font-medium">2025 - Present</span>
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="text-3xl text-gray-800 font-medium mb-2 group-hover:translate-x-4 transition-transform duration-300">Independent Content Creator</h4>
+                        <p class="text-gray-500 text-lg mb-4">Social Media, Lifestyle & UGC Content</p>
+                        <div class="text-gray-600 leading-relaxed max-w-2xl">
+                         <p>Created lifestyle, travel, and beauty content across Instagram and YouTube while independently managing the entire creative workflow from concept to production.
+
+This includes visual direction, photography, video editing, graphic design, and content publishing. Through this work I developed a strong understanding of visual storytelling, digital branding, and audience engagement.
+
+The experience strengthened my ability to design consistent visual identities, plan content structures, and create digital assets that communicate clearly across platforms.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Timeline Item 2 -->
+                <div class="flex gap-12 py-12 border-t border-gray-200 timeline-item transition-opacity duration-300 group hover-trigger" @mouseenter="cursorEnter" @mouseleave="cursorLeave">
+                    <div class="w-32 pt-2 text-right">
+                        <span class="text-[#E898B7] font-medium">2021 - 2023</span>
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="text-3xl text-gray-800 font-medium mb-2 group-hover:translate-x-4 transition-transform duration-300">Web & Digital Content Assistant</h4>
+                        <p class="text-gray-500 text-lg mb-4">Canadian Nurse Association</p>
+                        <p class="text-gray-600 leading-relaxed max-w-2xl">
+                      <p>Maintained and updated website pages using CMS platforms, ensuring content accuracy, clarity, and visual consistency across the organization's digital platforms.
+
+Collaborated closely with marketing, IT, and internal teams to implement website updates, support digital campaigns, and improve overall user experience.
+
+Assisted with webpage layout adjustments, content formatting, and digital asset management to maintain structured and user-friendly web pages.
+
+Conducted quality assurance testing before website launches, identifying content issues and ensuring pages functioned correctly across devices and browsers.
+
+Also supported large-scale email communication campaigns reaching over 100,000 subscribers.</p>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Timeline Item 3 -->
+                <div class="flex gap-12 py-12 border-t border-b border-gray-200 timeline-item transition-opacity duration-300 group hover-trigger" @mouseenter="cursorEnter" @mouseleave="cursorLeave">
+                    <div class="w-32 pt-2 text-right">
+                        <span class="text-[#E898B7] font-medium">2024 - 2025</span>
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="text-3xl text-gray-800 font-medium mb-2 group-hover:translate-x-4 transition-transform duration-300">Sales Associate</h4>
+                        <p class="text-gray-500 text-lg mb-4">Retail Store</p>
+                        <p class="text-gray-600 leading-relaxed max-w-2xl">
+                         <p>Provided in-store customer support and product demonstrations while assisting customers with online orders and inquiries.
+
+This role strengthened my communication, problem-solving, and customer experience skills in a fast-paced retail environment.</p>
+                        </p>
+                    </div>
+                </div>
+                 <div class="flex gap-12 py-12 border-t border-b border-gray-200 timeline-item transition-opacity duration-300 group hover-trigger" @mouseenter="cursorEnter" @mouseleave="cursorLeave">
+                    <div class="w-32 pt-2 text-right">
+                        <span class="text-[#E898B7] font-medium">2020 - 2021</span>
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="text-3xl text-gray-800 font-medium mb-2 group-hover:translate-x-4 transition-transform duration-300">Customer Service & Administrative Assistant</h4>
+                        <p class="text-gray-500 text-lg mb-4">Medicine Shoppe Pharmacy Ottawa</p>
+                        <p class="text-gray-600 leading-relaxed max-w-2xl">
+                           <p>Managed high-volume customer inquiries and appointment scheduling while supporting daily administrative operations during peak COVID-19 testing periods.
+
+Developed strong communication and organizational skills while working in a high-pressure environment.</p>
+            
+                           
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    
+
+    <!-- Skills Marquee -->
+    <!-- <section class="py-32 bg-black text-[#F5F5F5] overflow-hidden relative">
+        <div class="absolute top-0 left-0 w-full h-20 bg-gradient-to-b from-[#F5F5F5] to-transparent z-10"></div>
+        <div class="absolute bottom-0 left-0 w-full h-20 bg-gradient-to-t from-[#F5F5F5] to-transparent z-10"></div>
+
+        <div class="marquee-container flex items-center gap-16 opacity-80 hover:opacity-100 transition-opacity duration-500">
+            <div class="marquee-content flex gap-16">
+                <span v-for="skill in [...skills, ...skills, ...skills]" :key="skill" class="text-7xl font-bold font-['DelaGothicOne'] hover:text-[#E898B7] transition-colors cursor-default select-none">
+                    {{ skill }} <span class="text-[#E898B7] mx-8 text-4xl align-middle">✦</span>
+                </span>
+            </div>
+        </div>
+    </section> -->
+    <!-- Skills Section -->
+        <section id="skills" class="w-full py-32 px-40">
+            <div class="max-w-[1400px] text-center">
+                 <h2 class="text-5xl font-bold text-gray-800 mb-16">SKILLS & Tools</h2>
+                 
+                 <div class="flex flex-wrap justify-center gap-6" ref="skillsContainer">
+                    <button class="skill-btn px-8 py-4 rounded-full border border-[#E898B7] text-[#8C9197] text-lg font-medium magnetic-target hover:bg-[#E898B7] hover:text-white " @mouseenter="cursorEnter" @mouseleave="cursorLeave">HTML / CSS</button>
+                    <button class="skill-btn px-8 py-4 rounded-full border border-[#E898B7] text-[#8C9197] text-lg font-medium magnetic-target hover:bg-[#E898B7] hover:text-white " @mouseenter="cursorEnter" @mouseleave="cursorLeave">Responsive Web Design</button>
+                    <button class="skill-btn px-8 py-4 rounded-full border border-[#E898B7] text-[#8C9197] text-lg font-medium magnetic-target hover:bg-[#E898B7] hover:text-white " @mouseenter="cursorEnter" @mouseleave="cursorLeave">Landing Page Design</button>
+                    <button class="skill-btn px-8 py-4 rounded-full border border-[#E898B7] text-[#8C9197] text-lg font-medium magnetic-target hover:bg-[#E898B7] hover:text-white " @mouseenter="cursorEnter" @mouseleave="cursorLeave">UI / UX Design</button>
+                    <button class="skill-btn px-8 py-4 rounded-full border border-[#E898B7] text-[#8C9197] text-lg font-medium magnetic-target hover:bg-[#E898B7] hover:text-white " @mouseenter="cursorEnter" @mouseleave="cursorLeave">Wireframing</button>
+                    <button class="skill-btn px-8 py-4 rounded-full border border-[#E898B7] text-[#8C9197] text-lg font-medium magnetic-target hover:bg-[#E898B7] hover:text-white " @mouseenter="cursorEnter" @mouseleave="cursorLeave">Prototyping</button>
+                    <button class="skill-btn px-8 py-4 rounded-full border border-[#E898B7] text-[#8C9197] text-lg font-medium magnetic-target hover:bg-[#E898B7] hover:text-white " @mouseenter="cursorEnter" @mouseleave="cursorLeave">Figma</button>
+                    <button class="skill-btn px-8 py-4 rounded-full border border-[#E898B7] text-[#8C9197] text-lg font-medium magnetic-target hover:bg-[#E898B7] hover:text-white " @mouseenter="cursorEnter" @mouseleave="cursorLeave">WordPress</button>
+                    <button class="skill-btn px-8 py-4 rounded-full border border-[#E898B7] text-[#8C9197] text-lg font-medium magnetic-target hover:bg-[#E898B7] hover:text-white " @mouseenter="cursorEnter" @mouseleave="cursorLeave">Adobe Creative Suite
+(Photoshop, Illustrator, Premiere)</button>
+                    <button class="skill-btn px-8 py-4 rounded-full border border-[#E898B7] text-[#8C9197] text-lg font-medium magnetic-target hover:bg-[#E898B7] hover:text-white " @mouseenter="cursorEnter" @mouseleave="cursorLeave">Canva</button>
+                     <button class="skill-btn px-8 py-4 rounded-full border border-[#E898B7] text-[#8C9197] text-lg font-medium magnetic-target hover:bg-[#E898B7] hover:text-white " @mouseenter="cursorEnter" @mouseleave="cursorLeave">AIGC Tools</button>
+                      <button class="skill-btn px-8 py-4 rounded-full border border-[#E898B7] text-[#8C9197] text-lg font-medium magnetic-target hover:bg-[#E898B7] hover:text-white " @mouseenter="cursorEnter" @mouseleave="cursorLeave">AI-assisted coding</button>
+                       <button class="skill-btn px-8 py-4 rounded-full border border-[#E898B7] text-[#8C9197] text-lg font-medium magnetic-target hover:bg-[#E898B7] hover:text-white " @mouseenter="cursorEnter" @mouseleave="cursorLeave">Lovart</button>
+                     <button class="skill-btn px-8 py-4 rounded-full border border-[#E898B7] text-[#8C9197] text-lg font-medium magnetic-target hover:bg-[#E898B7] hover:text-white " @mouseenter="cursorEnter" @mouseleave="cursorLeave">Shopify</button>
+                      <button class="skill-btn px-8 py-4 rounded-full border border-[#E898B7] text-[#8C9197] text-lg font-medium magnetic-target hover:bg-[#E898B7] hover:text-white " @mouseenter="cursorEnter" @mouseleave="cursorLeave">Squarespace</button>
+<button class="skill-btn px-8 py-4 rounded-full border border-[#E898B7] text-[#8C9197] text-lg font-medium magnetic-target" @mouseenter="cursorEnter" @mouseleave="cursorLeave">CMS Management</button>
+                 </div>
+            </div>
+        </section>
+<section id="experience" class="min-h-screen w-full px-32 py-32 bg-white">
+            <h2 class="text-[120px] font-bold text-gray-100 absolute left-10 pointer-events-none select-none">Education</h2>
+            
+            <div class="max-w-4xl mx-auto relative z-10 timeline-container">
+                <div class="mb-20">
+                     <p class="text-[#E898B7] text-xl font-serif-accent italic mb-2">My Study Journey</p>
+                     <h3 class="text-4xl text-gray-800 font-semibold">Education</h3>
+                </div>
+  <div class="flex gap-12 py-12 border-t border-b border-gray-200 timeline-item transition-opacity duration-300 group hover-trigger" @mouseenter="cursorEnter" @mouseleave="cursorLeave">
+                    <div class="w-32 pt-2 text-right">
+                        <span class="text-[#E898B7] font-medium">2023</span>
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="text-3xl text-gray-800 font-medium mb-2 group-hover:translate-x-4 transition-transform duration-300">Project Management Certificate</h4>
+                        <p class="text-gray-500 text-lg mb-4">Algonquin College</p>
+                        <p class="text-gray-600 leading-relaxed max-w-2xl">
+                        </p>
+                    </div>
+                </div>
+                <div class="flex gap-12 py-12 border-t border-gray-200 timeline-item transition-opacity duration-300 group hover-trigger" @mouseenter="cursorEnter" @mouseleave="cursorLeave">
+                    <div class="w-32 pt-2 text-right">
+                        <span class="text-[#E898B7] font-medium">2017 - 2019</span>
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="text-3xl text-gray-800 font-medium mb-2 group-hover:translate-x-4 transition-transform duration-300">Interactive Media Design</h4>
+                        <p>Studied web design, UI/UX fundamentals, digital media production, and front-end development.</p>
+                        <p class="text-gray-500 text-lg mb-4">Algonquin College</p>
+                        <p class="text-gray-600 leading-relaxed max-w-2xl">
+                        </p>
+                    </div>
+                </div>
+                <!-- Timeline Item 1 -->
+                <div class="flex gap-12 py-12 border-t border-gray-200 timeline-item transition-opacity duration-300 group hover-trigger" @mouseenter="cursorEnter" @mouseleave="cursorLeave">
+                    <div class="w-32 pt-2 text-right">
+                        <span class="text-[#E898B7] font-medium">2012 - 2016</span>
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="text-3xl text-gray-800 font-medium mb-2 group-hover:translate-x-4 transition-transform duration-300">Bachelor of Tourism & Hospitality Management</h4>
+                        <p class="text-gray-500 text-lg mb-4">Management Development Institute of Singapore</p>
+                        <p class="text-gray-600 leading-relaxed max-w-2xl">
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Timeline Item 2 -->
+                
+
+                <!-- Timeline Item 3 -->
+              
+                 
+            </div>
+        </section>
+    <!-- Footer -->
+    <footer id="contact" class="h-screen bg-[#F5F5F5] flex flex-col justify-center items-center relative overflow-hidden">
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-pink-100/40 via-transparent to-transparent"></div>
+        <div class="z-10 text-center max-w-[1200px] mx-auto">
+
+<p class="text-xl tracking-widest uppercase mb-8 text-[#8C9197]">
+Interested in working together?
+</p>
+
+<a href="mailto:caochuhan@outlook.com"
+class="block w-full text-center text-[120px] font-bold text-black hover:text-[#E898B7] transition-colors leading-[0.95] tracking-tighter magnet-target font-['DelaGothicOne']">
+Let's build <br>
+<span class="text-[#E898B7]">something great.</span>
+</a>
+
+
+
+<div class="mt-10 flex justify-center gap-10 text-sm tracking-widest">
+
+<a href="https://www.linkedin.com/in/chuhan-cao/" class="hover:text-[#E898B7] transition-colors">
+LinkedIn
+</a>
+
+<span class="opacity-40">•</span>
+
+<a href="https://www.instagram.com/gracecc_9/" class="hover:text-[#E898B7] transition-colors">
+Instagram
+</a>
+
+<span class="opacity-40">•</span>
+
+<a href="https://chuhancao.squarespace.com/" class="hover:text-[#E898B7] transition-colors">
+Portfolio
+</a>
+
+</div>
+
+<p class="mt-12 text-sm text-gray-400 tracking-wide">
+Ottawa, Canada
+</p>
+
+<div class="mt-16">
+<a href="mailto:caochuhan@outlook.com">
+<button class="skill-btn px-8 py-4 rounded-full border border-[#E898B7] text-[#8C9197] text-lg font-medium magnetic-target hover:bg-[#E898B7] hover:text-white">
+Email Me
+</button>
+</a>
+</div>
+
+</div>
+        <!-- <div class="z-10 text-center">
+            <p class="text-xl tracking-widest uppercase mb-8 text-[#8C9197]">Interested in working together?</p>
+          <a href="mailto:caochuhan@outlook.com"
+class="block w-full text-center text-[100px] font-bold text-black hover:text-[#E898B7] transition-colors leading-none tracking-tighter magnet-target font-['DelaGothicOne']">
+Let's build<br>
+something great.
+</a>
+            
+            <div class="mt-20 flex justify-center gap-16">
+                <a href="https://www.instagram.com/gracecc_9/" class="group flex flex-col items-center gap-2">
+                    <div class="w-16 h-16 rounded-full border border-gray-300 flex items-center justify-center group-hover:bg-black group-hover:border-black transition-all duration-300">
+                        <i class="ri-instagram-line text-2xl group-hover:text-white transition-colors"></i>
+                    </div>
+                    <span class="text-sm font-medium">Instagram</span>
+                </a>
+                <a href="https://www.linkedin.com/in/chuhan-cao/" class="group flex flex-col items-center gap-2">
+                    <div class="w-16 h-16 rounded-full border border-gray-300 flex items-center justify-center group-hover:bg-black group-hover:border-black transition-all duration-300">
+                        <i class="ri-linkedin-fill text-2xl group-hover:text-white transition-colors"></i>
+                    </div>
+                    <span class="text-sm font-medium">LinkedIn</span>
+                </a>
+                <a href="https://chuhancao.squarespace.com/" class="group flex flex-col items-center gap-2">
+                    <div class="w-16 h-16 rounded-full border border-gray-300 flex items-center justify-center group-hover:bg-black group-hover:border-black transition-all duration-300">
+                        <i class="ri-behance-line text-2xl group-hover:text-white transition-colors"></i>
+                    </div>
+                    <span class="text-sm font-medium">Portfolio</span>
+                </a>
+                
+            </div>
+             <div class="mt-20 flex justify-center">
+             <a href="mailto:caochuhan@outlook.com"><button class="skill-btn px-8 py-4 rounded-full border border-[#E898B7] text-[#8C9197] text-lg font-medium magnetic-target hover:bg-[#E898B7] hover:text-white " @mouseenter="cursorEnter" @mouseleave="cursorLeave">Email Me</button></a></div>
+        </div> -->
+
+        <div class="absolute bottom-10 w-full px-[100px] flex justify-between text-sm font-mono text-gray-400">
+            <div>© 2024 Chuhan Cao. All Rights Reserved.</div>
+            <div>Ottawa, ON • (613) 276-6959</div>
+        </div>
+    </footer>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    const { createApp, ref, onMounted } = Vue;
+
+    createApp({
+        setup() {
+            const cursorDot = ref(null);
+            const cursorOutline = ref(null);
+
+            const skills = [
+                'Video Creation', 'Content Planning', 'Copywriting', 'Adobe Creative Suite', 
+                'Canva', 'CapCut', 'Figma', 'UX/UI Design', 'Social Media Strategy'
+            ];
+
+            const experience = [
+                {
+                    role: 'Content & Social Media Specialist',
+                    company: 'Creative Agency Inc.',
+                    period: '2022 - Present',
+                    desc: 'Leading social media campaigns, creating engaging video content, and managing brand voice across multiple platforms.',
+                    icon: 'ri-movie-line'
+                },
+                {
+                    role: 'Creative Marketing Coordinator',
+                    company: 'Tech Solutions Ltd.',
+                    period: '2020 - 2022',
+                    desc: 'Collaborated with design teams to produce marketing collaterals and executed digital marketing strategies.',
+                    icon: 'ri-megaphone-line'
+                },
+                {
+                    role: 'Junior Graphic Designer',
+                    company: 'Design Studio',
+                    period: '2019 - 2020',
+                    desc: 'Assisted in visual identity projects and created social media assets for diverse clients.',
+                    icon: 'ri-pen-nib-line'
+                }
+            ];
+
+            onMounted(() => {
+                // Custom Cursor Logic
+                window.addEventListener("mousemove", (e) => {
+                    const posX = e.clientX;
+                    const posY = e.clientY;
+
+                    if (cursorDot.value && cursorOutline.value) {
+                        cursorDot.value.style.left = `${posX}px`;
+                        cursorDot.value.style.top = `${posY}px`;
+
+                        // Add a little lag for the outline
+                        cursorOutline.value.animate({
+                            left: `${posX}px`,
+                            top: `${posY}px`
+                        }, { duration: 500, fill: "forwards" });
+                    }
+                });
+
+                // Magnetic Hover Effect
+                const magnets = document.querySelectorAll('.magnet-target');
+                magnets.forEach((magnet) => {
+                    magnet.addEventListener('mousemove', (e) => {
+                        const rect = magnet.getBoundingClientRect();
+                        const x = e.clientX - rect.left - rect.width / 2;
+                        const y = e.clientY - rect.top - rect.height / 2;
+                        
+                        magnet.style.transform = `translate(${x * 0.3}px, ${y * 0.3}px)`;
+                        cursorOutline.value.style.width = '60px';
+                        cursorOutline.value.style.height = '60px';
+                    });
+
+                    magnet.addEventListener('mouseleave', () => {
+                        magnet.style.transform = 'translate(0, 0)';
+                        cursorOutline.value.style.width = '40px';
+                        cursorOutline.value.style.height = '40px';
+                    });
+                });
+
+                // GSAP Animations
+                gsap.registerPlugin(ScrollTrigger);
+
+                // Hero Animations
+                const tl = gsap.timeline();
+                tl.to('.reveal-img', { opacity: 1, duration: 1.5, ease: 'power2.out' })
+                  .to('.reveal-name-top', { y: 0, opacity: 1, duration: 1, ease: 'power3.out' }, "-=1")
+                  .to('.reveal-name-bottom', { y: 0, opacity: 1, duration: 1, ease: 'power3.out' }, "-=0.8")
+                  .to('.reveal-text', { opacity: 1, duration: 1 }, "-=0.5")
+                  .to('.reveal-sub', { opacity: 1, y: 0, duration: 1, stagger: 0.2 }, "-=0.5");
+
+                // About Section Scroll Trigger
+                gsap.utils.toArray('.about-card').forEach((card, i) => {
+                    gsap.to(card, {
+                        scrollTrigger: {
+                            trigger: "#about",
+                            start: "top 70%",
+                        },
+                        y: 0,
+                        opacity: 1,
+                        duration: 1,
+                        delay: i * 0.2,
+                        ease: 'power3.out'
+                    });
+                });
+
+                // Experience Hover interactions handled by CSS, but list entrance:
+                gsap.from(".exp-item", {
+                    scrollTrigger: {
+                        trigger: "#experience",
+                        start: "top 60%",
+                    },
+                    y: 50,
+                    opacity: 0,
+                    duration: 0.8,
+                    stagger: 0.2,
+                    ease: "power2.out"
+                });
+            });
+
+            return {
+                cursorDot,
+                cursorOutline,
+                skills,
+                experience
+            };
+        }
+    }).mount('#app');
+</script>
+</body>
+</html>
